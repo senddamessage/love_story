@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ذكرى سنتين ❤️</title>
+    <style>
+        :root{--r:#ff315f;--p:#ff9eb5;--bg:#050507}
+        *{box-sizing:border-box}
+        body { background: var(--bg); color: #fff; text-align: center; font-family: Georgia, "Times New Roman", serif; margin: 0; padding: 15px; overflow-x: hidden; }
+        #hearts{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+        .heart{position:absolute;color:var(--r);animation:float linear infinite;text-shadow:0 0 14px var(--r)}
+        @keyframes float{0%{transform:translateY(110vh) rotate(0);opacity:0}15%{opacity:.75}100%{transform:translateY(-15vh) rotate(45deg);opacity:0}}
+        
+        .container { display: none; max-width: 600px; margin: 0 auto; padding-bottom: 50px; position: relative; z-index: 1; }
+        .active { display: block; }
+        
+        #screen-login { margin-top: 80px; }
+        input[type="password"] { padding: 15px; border-radius: 999px; border: 1px solid #ff315f66; background: #08080b; color: #fff; font-size: 17px; text-align: center; width: min(330px, 100%); outline: none; margin-bottom: 15px; }
+        
+        /* تنسيق العداد 3 فوق و 3 تحت */
+        .counter{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:20px 0 10px 0}
+        .unit{background:#111117;border:1px solid #ff315f35;border-radius:18px;padding:12px 4px}
+        .num{font-size:clamp(24px,6vw,38px);font-weight:bold;color:#fff}
+        .label{font-size:12px;color:var(--p);margin-top:4px}
+        
+        .timer-note { color: var(--p); font-size: 15px; margin-bottom: 25px; font-weight: bold; text-shadow: 0 0 10px rgba(255,158,181,0.3); }
+
+        .card{background:linear-gradient(145deg,#17171d,#0b0b0f);border:1px solid #ff315f44;border-radius:28px;padding:23px;box-shadow:0 20px 70px #0008; margin-top: 15px;}
+        .question { margin: 25px 0; text-align: right; }
+        .qtitle { text-align: center; font-size: 19px; margin-bottom: 15px; color: var(--p); }
+        
+        .option { width: 100%; display: block; margin: 10px 0; padding: 14px; border: 1px solid #ff315f35; border-radius: 16px; background: #15151b; color: white; font-size: 16px; text-align: right; cursor: pointer; transition: 0.2s; }
+        .option:hover { background: #22222d; }
+        .option.correct { background: #2a1018; border-color: var(--r); }
+        .option:disabled { cursor: default; opacity: 0.8; }
+        
+        button.btn { border: 0; border-radius: 999px; background: var(--r); color: #fff; padding: 13px 28px; font-size: 16px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        button.btn:hover { background: #d50000; }
+        
+        .error-msg { color: #ff8da5; font-weight: bold; margin-top: 8px; font-size: 14px; display: none; }
+        
+        .video-box { margin-top: 15px; border-radius: 16px; overflow: hidden; border: 1px solid #ff315f44; box-shadow: 0 10px 30px rgba(0,0,0,0.5); background: #000; }
+        .video-box video { width: 100%; display: block; background: #000; }
+        
+        .short-message { background: linear-gradient(145deg, #17171d, #0b0b0f); border: 1px solid #ff315f44; padding: 15px; border-radius: 18px; margin: 15px 0 25px 0; font-size: 16px; line-height: 1.6; color: var(--p); }
+        
+        .final-photo-box { margin: 20px 0; border-radius: 16px; overflow: hidden; border: 1px solid #ff315f44; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .final-photo-box img { width: 100%; display: block; }
+        .long-message { background: linear-gradient(145deg, #17171d, #0b0b0f); border: 1px solid #ff315f44; padding: 22px; border-radius: 20px; text-align: right; font-size: 16px; line-height: 1.9; color: #fff; white-space: pre-line; }
+    </style>
+</head>
+<body>
+
+    <div id="hearts"></div>
+    <script>
+        for(let i=0; i<35; i++) {
+            let h = document.createElement('div'); h.innerHTML = '♥'; h.className = 'heart';
+            h.style.left = Math.random()*100 + 'vw'; h.style.fontSize = (12 + Math.random()*20) + 'px';
+            h.style.animationDuration = (6 + Math.random()*8) + 's';
+            h.style.animationDelay = (-Math.random()*10) + 's';
+            document.body.appendChild(h);
+        }
+    </script>
+
+    <!-- 1. شاشة الباسورد -->
+    <div id="screen-login" class="container active">
+        <div style="font-size:12px;letter-spacing:4px;color:var(--p)">a little secret</div>
+        <h1 style="color: #ff315f; font-size: clamp(30px, 7vw, 45px); text-shadow:0 0 25px #ff315f55">Enter the password</h1>
+        <p style="color:#ffb1c2; font-size: 18px;">My love ❤️</p>
+        <div class="card">
+            <input type="password" id="passInput" placeholder="••••••"><br>
+            <div id="loginError" class="error-msg" style="display:block;"></div>
+            <br>
+            <button class="btn" onclick="checkPassword()">Enter ❤️</button>
+            <p style="font-size:12px;color:#bca9af; margin-top:15px;">14 • 08 • 2026</p>
+        </div>
+    </div>
+
+    <!-- 2. الشاشة الرئيسية والأسئلة -->
+    <div id="screen-main" class="container">
+        <div style="font-size:12px;letter-spacing:4px;color:var(--p)">14 August 2024 → 14 August 2026</div>
+        <h2 style="color: #ff315f; font-size: clamp(24px, 6vw, 36px); text-shadow:0 0 25px #ff315f55">Our time together ❤️</h2>
+        
+        <!-- العداد (3 فوق و 3 تحت) -->
+        <div class="counter">
+            <div class="unit"><div id="years" class="num">0</div><div class="label">سنة</div></div>
+            <div class="unit"><div id="months" class="num">0</div><div class="label">شهر</div></div>
+            <div class="unit"><div id="days" class="num">0</div><div class="label">يوم</div></div>
+            <div class="unit"><div id="hours" class="num">0</div><div class="label">ساعة</div></div>
+            <div class="unit"><div id="minutes" class="num">0</div><div class="label">دقيقة</div></div>
+            <div class="unit"><div id="seconds" class="num">0</div><div class="label">ثانية</div></div>
+        </div>
+        <div class="timer-note">جاوب صح يا حبيبي 🌚❤️</div>
+
+        <div class="card">
+            <!-- الأسئلة -->
+            <div class="question" data-answer="2" data-msg="اتلم واختار صح!">
+                <div class="qtitle">1. أيه أكتر حاجة بتحبها في حياتك؟</div>
+                <button class="option" onclick="answer(this, 1)">ميسي ⚽</button>
+                <button class="option" onclick="answer(this, 2)">مش بحب في حياتي قدك يا حبيبتي ❤️</button>
+                <button class="option" onclick="answer(this, 3)">القهوة ☕</button>
+                <div class="error-msg"></div>
+            </div>
+
+            <div class="question" data-answer="1" data-msg="جاوب عدل!">
+                <div class="qtitle">2. بوحشك على طول؟</div>
+                <button class="option" onclick="answer(this, 1)">كل ثانية</button>
+                <button class="option" onclick="answer(this, 2)">كل دقيقة</button>
+                <button class="option" onclick="answer(this, 3)">كل ساعة</button>
+                <div class="error-msg"></div>
+            </div>
+
+            <div class="question" data-answer="3" data-msg="جاوب صح بقى خلينا ننتقل!">
+                <div class="qtitle">3. من إيه بتخاف؟</div>
+                <button class="option" onclick="answer(this, 1)">الموت</button>
+                <button class="option" onclick="answer(this, 2)">النصيب</button>
+                <button class="option" onclick="answer(this, 3)">إني أخسرك ❤️</button>
+                <div class="error-msg"></div>
+            </div>
+
+            <div class="question" data-answer="2" data-msg="غلط، مش مسموحلك ترد عليها!">
+                <div class="qtitle">4. لو في بنت طلبت منك المساعدة هتعمل إيه؟</div>
+                <button class="option" onclick="answer(this, 1)">هتقولها أنا مرتبط</button>
+                <button class="option" onclick="answer(this, 2)">هتسيبها وتمشي</button>
+                <button class="option" onclick="answer(this, 3)">هساعدها</button>
+                <div class="error-msg"></div>
+            </div>
+
+            <div class="question" data-answer="3" data-msg="إزاي يعنيي 🔪🔪">
+                <div class="qtitle">5. ممكن تتخلى عن حاجة بتحبها عشاني؟</div>
+                <button class="option" onclick="answer(this, 1)">صعب</button>
+                <button class="option" onclick="answer(this, 2)">ممكن</button>
+                <button class="option" onclick="answer(this, 3)">مينفعش أتخلى عنك ❤️</button>
+                <div class="error-msg"></div>
+            </div>
+
+            <div class="question" data-answer="1" data-msg="محصلششششش">
+                <div class="qtitle">6. إيه الحاجة اللي مشتركة بينا؟</div>
+                <button class="option" onclick="answer(this, 1)">التفاهم</button>
+                <button class="option" onclick="answer(this, 2)">العند</button>
+                <button class="option" onclick="answer(this, 3)">البرود</button>
+                <div class="error-msg"></div>
+            </div>
+
+            <div id="allDone" style="display:none; margin-top:25px;">
+                <button class="btn" onclick="goToMemories('screen-memories')">the next😚 ➡️</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. الشاشة الثالثة (الفيديوهات والكلمات) -->
+    <div id="screen-memories" class="container">
+        <h2 style="color:var(--p);">بحبك يا بابا 🥹❤️</h2>
+        
+        <!-- الفيديو الأول -->
+        <div class="video-box">
+            <video controls preload="none">
+                <source src="https://files.catbox.moe/n5zi4q.mp4" type="video/mp4">
+            </video>
+        </div>
+        <div class="short-message">
+            ومهما حصل بينا هتفضل انت اكتر واحد بحبو واكتر واحد بحب اشاركه حياتي واتكلم معاه '❣️
+        </div>
+
+        <!-- الفيديو الثاني -->
+        <div class="video-box">
+            <video controls preload="none">
+                <source src="https://files.catbox.moe/m1mseu.mp4" type="video/mp4">
+            </video>
+        </div>
+        <div class="short-message">
+            يديمك ليا يا كل الدنيا انتت 🫂♥️
+        </div>
+
+        <!-- الفيديو الثالث -->
+        <div class="video-box">
+            <video controls preload="none">
+                <source src="https://files.catbox.moe/m9hjp7.mp4" type="video/mp4">
+            </video>
+        </div>
+        <div class="short-message">
+            بحب الفيد دهه اويي لأن الوحيد الي احنا فيه مع بعض 🥹❤️❤️❤️
+        </div>
+
+        <button class="btn" onclick="goToFinalSection('screen-end')">The End ❤️</button>
+    </div>
+
+    <!-- 4. الشاشة الأخيرة (مخصصة للصورة والأغنية والرسالة الطويلة الجديدة) -->
+    <div id="screen-end" class="container">
+        <h2 style="color: #ff315f; text-shadow:0 0 25px #ff315f55">النهاية ❤️</h2>
+        
+        <!-- الصورة الأخيرة -->
+        <div class="final-photo-box">
+            <img src="https://files.catbox.moe/fwc6vq.jpg" alt="صورة الذكرى">
+        </div>
+
+        <!-- الرسالة الطويلة المعدلة -->
+        <div class="long-message">
+مش عارفه أبدا منين ولا اقول ايي ولا مرتبه كلامم ،سيبك من الفيد انا مبعرفش اتكلم كول خلقه مش عارفه ازاى كنت هتكلم ف فيد ما طبيعي كل ثانيه اقول مش عارفه اقول اى 😂😂❤️
+ ماعالينا المهم انا بحبك اوى ي بابا حرفيا والله  بجد متعرفش انا بقيت مبسوطه ازاى اول ما خدت بالى ان النهارده هو اليوم الى ارتبطنا فيهه ،🥹❤️ سنتين مع بعض ب احداث كتيرر اووي ، يارب اكون قدمتلك فيهم ايام حلوه اكتر من الايام الوحشه، 🫂 بجد يديمك ليا مبسوط ع طول ويارب مشوفش فيك اى حاجه وحشهه ويخليك ليا ع طول يارب ، مش عاوزه حاجه من الدنيا غيرك لانك كل الدنيا اصلاا ، مفيش كلام يوصف حبي ليك مهما اقول م هقدر اوصلكك قد اى انا بحبك ، يديمك معايا العمر كله ي بابا 🫂♥️ 
+
+بحبك بكل تفاصيلك ده كفايه معاملتك لياا شايفيني بنتك قبل ما اكون حبيبتك مش بننام غير ف حضن بعض تفاصيلنا مع بعض كلها جميلهه وبحبها اوى والله،👀❤️❤️
+ بمجرد ما بسمع صوتك بفضل مبسوطه ولا ضحكتك ال عندي ب الدنيا دي بجد بعشقك كدهوو ، ❤️
+انت الحاجه الوحيده ال مينفعش تبقى ذكرى ولو ضعت مني هفقد الثقه في اى حد حرفياً وهتبقى علاقتي بالحب انتهت ومش مجرد كلام والله  حقيقي حياتي من غيرك كدهوو  انا اكتشفت اني بحبك اكتر من نفسي بجد يا رب نبقى من نصيب بعض وتكمل علاقتنا على خير وانا واثقه فيك وعارفه انك قد كل وعد ي حبيب عيونى انت  .🫂❤️❤️
+بحبك وهفضل احبك مهما حصل، يديمك ليا حبيب واب وصاحب واخ وكل حاجه والله بدمع اني ازاى بحب حد الحب ده كلهه بجد بحبك اوي والله 🫂🫂🫂❤️❤️❤️❤️❤️
+الدنيا منغيرك حقيقي ولا تتعاش فعلاا 🥹❤️❤️
+        </div>
+    </div>
+
+    <script>
+        let loveSong = new Audio('https://files.catbox.moe/uyo16q.mp3');
+        loveSong.loop = true;
+
+        // أغنية الصفحة الأخيرة
+        let finalSong = new Audio('https://files.catbox.moe/kkx266.mp3');
+        finalSong.loop = true;
+
+        function goToSection(screenId) {
+            document.querySelectorAll('.container').forEach(el => el.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+            window.scrollTo(0,0);
+        }
+
+        // إيقاف الأغنية الأولى عند الانتقال
+        function goToMemories(screenId) {
+            loveSong.pause();
+            loveSong.currentTime = 0;
+            goToSection(screenId);
+        }
+
+        // الانتقال للـ End وتشغيل الأغنية من الثانية 42
+        function goToFinalSection(screenId) {
+            loveSong.pause();
+            loveSong.currentTime = 0;
+            
+            finalSong.currentTime = 42;
+            finalSong.play().catch(e => console.log(e));
+            
+            goToSection(screenId);
+        }
+
+        function checkPassword() {
+            let p = document.getElementById('passInput').value;
+            if(p === "31/12") {
+                goToSection('screen-main');
+                loveSong.play().catch(e => console.log(e));
+            } else {
+                document.getElementById('loginError').innerText = "الباسورد غلط يا حبيبي، حاول تاني! (31/12)";
+            }
+        }
+
+        // نظام الأسئلة التفاعلي
+        let solved = 0;
+        function answer(btn, n) {
+            let q = btn.closest(".question");
+            if(q.dataset.done) return;
+            let errElem = q.querySelector('.error-msg');
+            
+            if(n == q.dataset.answer) {
+                q.dataset.done = 1;
+                btn.classList.add("correct");
+                errElem.style.display = "none";
+                q.querySelectorAll(".option").forEach(x => x.disabled = true);
+                solved++;
+                if(solved === 6) {
+                    document.getElementById("allDone").style.display = "block";
+                }
+            } else {
+                errElem.innerText = q.dataset.msg;
+                errElem.style.display = "block";
+            }
+        }
+
+        // العداد الدقيق من 14 أغسطس 2024
+        function updateTimer() {
+            const start = new Date(2024, 7, 14, 0, 0, 0);
+            const now = new Date();
+
+            let years = now.getFullYear() - start.getFullYear();
+            let months = now.getMonth() - start.getMonth();
+            let days = now.getDate() - start.getDate();
+            let hours = now.getHours() - start.getHours();
+            let minutes = now.getMinutes() - start.getMinutes();
+            let seconds = now.getSeconds() - start.getSeconds();
+
+            if (seconds < 0) { seconds += 60; minutes--; }
+            if (minutes < 0) { minutes += 60; hours--; }
+            if (hours < 0) { hours += 24; days--; }
+            if (days < 0) {
+                months--;
+                let prevMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+                days += prevMonth.getDate();
+            }
+            if (months < 0) { years--; months += 12; }
+
+            document.getElementById("years").textContent = years;
+            document.getElementById("months").textContent = months;
+            document.getElementById("days").textContent = days;
+            document.getElementById("hours").textContent = hours;
+            document.getElementById("minutes").textContent = minutes;
+            document.getElementById("seconds").textContent = seconds;
+        }
+        setInterval(updateTimer, 1000);
+        updateTimer();
+    </script>
+</body>
+</html>
